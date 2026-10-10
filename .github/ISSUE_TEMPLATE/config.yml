@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🔒 安全漏洞（不要公开提交）
+    url: https://github.com/xiaoqi0102/inkstone-ui/security/advisories/new
+    about: 通过 GitHub 私密渠道报告安全问题，只有维护者可见
+  - name: 📖 设计规范与文档
+    url: https://github.com/xiaoqi0102/inkstone-ui/tree/main/docs
+    about: 提 issue 前先看文档，很多问题（含"故意不做"的项）已有答案

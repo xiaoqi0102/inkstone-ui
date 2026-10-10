@@ -1,0 +1,90 @@
+/* ============================================================================
+ * 基础层（Base）—— 依赖 Tailwind 的存在，但不负责引入 Tailwind。
+ * ----------------------------------------------------------------------------
+ * 用法（消费者项目自己的入口 CSS 里）：
+ *   @import "tailwindcss";
+ *   @import "tw-animate-css";
+ *   @import "inkstone-ui/styles/tokens.css";
+ *   @import "inkstone-ui/styles/base.css";
+ *   @source "../node_modules/inkstone-ui/src";
+ *
+ * 为什么拆成 tokens / base 两个文件：tokens.css 是纯变量，谁都能引；
+ * base.css 里有 @apply 和 @custom-variant，必须排在 tailwindcss 之后。
+ * 库里自带的 globals.css 只是把三个文件按正确顺序拼好的"全家桶"。
+ * ========================================================================== */
+
+/* 深色模式变体：靠祖先 .dark 生效，不依赖 tailwind 的 darkMode 配置项。
+ * 注意选择器里必须同时含 `html.dark *`，否则 <html class="dark"> 自身命不中。 */
+@custom-variant dark (&:is(.dark *, html.dark *));
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    /* 全局隐藏滚动条：技术面板配色下滚动条很破坏观感，靠滚动本身+渐隐提示即可 */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    isolation: isolate;
+  }
+
+  /* 背景氛围光晕：两个大半径模糊圆，一绿一青，固定不随滚动。
+   * 这是整套 UI "通透感"的来源 —— 去掉后页面会立刻变平。
+   * z-index:-1 + body 上的 isolation:isolate，保证它在内容之下但不跑到 body 外面。 */
+  body::before,
+  body::after {
+    content: '';
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(40px);
+    opacity: 0.6;
+    z-index: -1;
+  }
+
+  body::before {
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle at 30% 20%, oklch(0.68 0.05 232) 0%, transparent 70%);
+    top: 10%;
+    right: 10%;
+  }
+
+  body::after {
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle at 60% 40%, oklch(0.82 0.03 73) 0%, transparent 70%);
+    bottom: 10%;
+    left: 5%;
+  }
+}
+
+/* ----------------------------------------------------------------------------
+ * recharts 内部元素：统一走令牌。
+ * 背景：旧版 shadcn 抄来的选择器是 recharts 2 的**下划线式**类名
+ * （.recharts-cartesian-axis-tick_text / .recharts-cartesian-grid_line …），
+ * 本库用 recharts 3，类名已改成**连字符式**（.recharts-cartesian-axis-tick-value、
+ * .recharts-cartesian-grid、.recharts-polar-grid、.recharts-reference-line …），
+ * 于是那一整族选择器全部静默失效 —— 刻度字一直用框架自带的 #666，
+ * 在深色主题下几乎看不清，且完全不跟随主题。
+ * 这里用正确类名 + var(--令牌) 重写，深浅两套自动跟着令牌走。
+ * 改图表配色时只改 tokens.css 里的 --chart-*，不要在这里写死颜色。
+ * -------------------------------------------------------------------------- */
+.recharts-cartesian-axis-tick-value {
+  fill: var(--muted-foreground);
+}
+.recharts-cartesian-grid line {
+  stroke: var(--border);
+}
+.recharts-tooltip-cursor {
+  stroke: var(--border);
+  fill: var(--muted);
+}
+.recharts-reference-line line {
+  stroke: var(--border);
+}
+.recharts-dot,
+.recharts-sector {
+  stroke: transparent;
+}

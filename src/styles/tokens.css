@@ -1,0 +1,203 @@
+/* ============================================================================
+ * 设计令牌（Design Tokens）—— 整套视觉风格的唯一源头
+ * ----------------------------------------------------------------------------
+ * 配色「暖纸 · 钢蓝」：暖象牙纸面 + 深棕墨字 + 一处钢蓝。
+ *   骨架取自一组四色配色卡（灰蓝 #C7D3DB / 灰褐 #A79A8A / 象牙 #FCF7DF /
+ *   深棕墨 #3E3630）。原卡的灰蓝是很淡的灰调蓝（L 86%），压不住按钮文字，
+ *   因此品牌蓝由同一冷调色相另行压深（→ oklch 0.50 0.085 248），
+ *   取"清晰的钢蓝"而非偏青的灰蓝；淡彩则退居衬色。
+ *
+ * 色温铁律（本套配色成立的关键）：
+ *   全部中性色（底/卡/静默/描边/次级）色相统一在暖带 55°~95°，
+ *   品牌蓝与图表色统一在冷带 248°~258°。
+ *   —— 一旦把 --muted / --border 之流也调成冷色，卡内的进度轨、分隔线
+ *   就会和暖卡底"打架发脏"。改色请守住这两条色带。
+ *
+ * 结构：oklch 色彩空间、双主题（浅色暖象牙 / 深色暖炭），统一圆角与阴影梯度。
+ *   深色是浅色的忠实反转：亮端取暖、暗端也取暖，只保留品牌蓝为唯一冷点。
+ *
+ * 用法：在项目入口 CSS 里 `@import "…/tokens.css";` 即可获得全部
+ * `bg-background / text-foreground / border-border / bg-primary …` 工具类。
+ * 换品牌色只需要改这一个文件里的 --primary / --accent / --ring 三个值。
+ *
+ * 为什么用 oklch：亮暗两端可以只调 L（亮度）通道就得到视觉等重的颜色，
+ * 不像 hex 换深色主题时得逐个手调，避免"深色下发灰/发脏"。
+ *
+ * 对比度：本文件所有「文字/所在面」配对均已核过 WCAG AA（≥4.5:1），
+ * 含主按钮渐变 primary→accent 的两端；描边、进度轨这类"分区/轨迹"配对
+ * 按可分辨口径（≥1.15）。改动数值后请重跑对比度校验，别只靠肉眼。
+ * ========================================================================== */
+
+:root {
+  /* --- 底色与文字（暖象牙底 + 近白卡：卡比底更干净，读作"纸上纸"）--- */
+  --background: oklch(0.9700 0.0150 92.0000);
+  --foreground: oklch(0.3393 0.0153 59.1000);
+  --card: oklch(0.9930 0.0045 95.0000);
+  --card-foreground: oklch(0.3393 0.0153 59.1000);
+  --popover: oklch(0.9930 0.0045 95.0000);
+  --popover-foreground: oklch(0.3393 0.0153 59.1000);
+  /* --- 品牌主色（换品牌改这里）---
+   * primary 与 accent 必须同样"深"：主按钮是 primary→accent 渐变 + 近白文字，
+   * accent 一旦调亮，渐变末端的文字对比度就会掉到 AA 以下。 */
+  --primary: oklch(0.5000 0.0850 248.0000);
+  --primary-foreground: oklch(0.9900 0.0080 95.0000);
+  --accent: oklch(0.5550 0.0950 258.0000);
+  --accent-foreground: oklch(0.9900 0.0080 95.0000);
+  --ring: oklch(0.5000 0.0850 248.0000);
+  /* --- 次级/静默（保持暖带，见文件头"色温铁律"）--- */
+  --secondary: oklch(0.9250 0.0100 85.0000);
+  --secondary-foreground: oklch(0.4000 0.0150 70.0000);
+  --muted: oklch(0.9250 0.0090 88.0000);
+  --muted-foreground: oklch(0.5300 0.0180 80.0000);
+  /* --- 抬升面：必须比所在"轨道"亮一档的面（选中标签、开关滑块、浮层内可选面）。
+   *     为什么单独开一对而不是复用 --card：深色里 card(L≈0.28) 其实比 muted 更暗，
+   *     复用会导致"选中项往下沉"。凡"要看起来浮起来"的地方都用这一对。--- */
+  --raised: oklch(0.9930 0.0045 95.0000);
+  --raised-foreground: oklch(0.3393 0.0153 59.1000);
+  /* --- 危险态 --- */
+  --destructive: oklch(0.5500 0.1500 30.0000);
+  --destructive-foreground: oklch(0.9900 0.0080 95.0000);
+  /* --- 描边 --- */
+  --border: oklch(0.8900 0.0100 85.0000);
+  --input: oklch(0.8900 0.0100 85.0000);
+  /* --- 图表 5 色：三档钢蓝（同色相递降亮度）+ 两档暖褐。
+   *     冷蓝是主序列，暖褐当对比序列 —— 比彩虹配色更耐看，又能把 5 条区分开。--- */
+  --chart-1: oklch(0.6800 0.0900 248.0000);
+  --chart-2: oklch(0.5700 0.1000 252.0000);
+  --chart-3: oklch(0.4600 0.0900 256.0000);
+  --chart-4: oklch(0.6800 0.0620 62.0000);
+  --chart-5: oklch(0.5200 0.0420 75.0000);
+  /* --- 侧栏 / Dock：深棕墨轨道（暖暗），选中项用浅钢蓝滑块 + 深棕字 --- */
+  --sidebar: oklch(0.2650 0.0120 58.0000);
+  --sidebar-foreground: oklch(0.9450 0.0120 95.0000);
+  --sidebar-primary: oklch(0.7200 0.0750 248.0000);
+  --sidebar-primary-foreground: oklch(0.2600 0.0130 58.0000);
+  --sidebar-accent: oklch(0.3400 0.0130 60.0000);
+  --sidebar-accent-foreground: oklch(0.9450 0.0120 95.0000);
+  --sidebar-border: oklch(0.3600 0.0130 60.0000);
+  --sidebar-ring: oklch(0.7200 0.0750 248.0000);
+  /* --- 圆角 / 间距 --- */
+  --radius: 0.5rem;
+  --spacing: 0.25rem;
+  --tracking-normal: 0em;
+
+  /* --- 阴影梯度（比 Tailwind 默认更收敛，配深色主题不发灰）--- */
+  --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+  --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+  --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
+  --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
+  --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10);
+  --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10);
+  --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10);
+  --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+
+  /* --- 动效时长（统一节奏，组件里只引用变量）--- */
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-slow: 300ms;
+  --duration-slower: 350ms;
+}
+
+/* 深色主题：暖炭底 + 米白字（浅色的忠实反转：暗端取暖、亮端取冷，只保留品牌蓝）。
+ * html.dark 与 .dark 双选择器是为了兼容
+ * "挂在 <html> 上" 和 "挂在某个子树容器上"（如文档站局部演示）两种用法。 */
+html.dark,
+.dark {
+  --background: oklch(0.2250 0.0060 65.0000);
+  --foreground: oklch(0.9350 0.0100 92.0000);
+  --card: oklch(0.2750 0.0065 65.0000);
+  --card-foreground: oklch(0.9350 0.0100 92.0000);
+  --popover: oklch(0.2750 0.0065 65.0000);
+  --popover-foreground: oklch(0.9350 0.0100 92.0000);
+  --primary: oklch(0.7300 0.0850 248.0000);
+  --primary-foreground: oklch(0.2050 0.0120 65.0000);
+  --accent: oklch(0.6650 0.0900 258.0000);
+  --accent-foreground: oklch(0.2050 0.0120 65.0000);
+  --ring: oklch(0.7300 0.0850 248.0000);
+
+  --secondary: oklch(0.3350 0.0090 70.0000);
+  --secondary-foreground: oklch(0.8900 0.0080 92.0000);
+  --muted: oklch(0.3300 0.0085 68.0000);
+  --muted-foreground: oklch(0.7100 0.0120 82.0000);
+
+  --raised: oklch(0.3700 0.0080 65.0000);
+  --raised-foreground: oklch(0.9350 0.0100 92.0000);
+
+  /* 危险色同样遵守深色映射（与 primary 同构）：暗底上取浅红做"面色/文字色"+ 深棕字。
+   * 不这么做的话，深红既当不了文字（暗底上实测仅 2.4:1，看不清），
+   * 又会和暖炭底糊成一片 —— 这是深色主题最容易翻车的一处。 */
+  --destructive: oklch(0.8400 0.1200 30.0000);
+  --destructive-foreground: oklch(0.2050 0.0120 65.0000);
+
+  --border: oklch(0.3750 0.0090 65.0000);
+  --input: oklch(0.3750 0.0090 65.0000);
+
+  --chart-1: oklch(0.7600 0.0800 248.0000);
+  --chart-2: oklch(0.6600 0.0900 252.0000);
+  --chart-3: oklch(0.5500 0.0850 256.0000);
+  --chart-4: oklch(0.7400 0.0600 62.0000);
+  --chart-5: oklch(0.5800 0.0420 75.0000);
+
+  --sidebar: oklch(0.1950 0.0060 65.0000);
+  --sidebar-foreground: oklch(0.9350 0.0100 92.0000);
+  --sidebar-primary: oklch(0.7300 0.0850 248.0000);
+  --sidebar-primary-foreground: oklch(0.2050 0.0120 65.0000);
+  --sidebar-accent: oklch(0.3000 0.0080 65.0000);
+  --sidebar-accent-foreground: oklch(0.9350 0.0100 92.0000);
+  --sidebar-border: oklch(0.3750 0.0090 65.0000);
+  --sidebar-ring: oklch(0.7300 0.0850 248.0000);
+}
+
+/* Tailwind v4：把 CSS 变量注册成主题，才能用 bg-primary / text-muted-foreground 这类类名。
+ * `@theme inline` 的 inline 关键字表示"直接把 var() 透传给工具类"，不额外包一层。 */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-raised: var(--raised);
+  --color-raised-foreground: var(--raised-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+
+  --shadow-2xs: var(--shadow-2xs);
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow: var(--shadow);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
+  --shadow-2xl: var(--shadow-2xl);
+}

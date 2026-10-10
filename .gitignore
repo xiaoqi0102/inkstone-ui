@@ -1,0 +1,25 @@
+# 依赖与产物
+node_modules/
+dist/
+*.tgz
+.vite/
+coverage/
+
+# 包管理器/工具缓存
+.npm/
+.eslintcache
+*.tsbuildinfo
+
+# 环境与密钥（永远不要提交）
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# 编辑器 / 系统
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
