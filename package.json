@@ -12,17 +12,17 @@
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
-    "@tanstack/react-virtual": "^3.14.10",
+    "@tanstack/react-virtual": "^3.14.22",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "lucide-react": "^1.38.0",
+    "lucide-react": "^1.61.0",
     "motion": "^13.1.1",
-    "radix-ui": "^1.6.7",
+    "radix-ui": "^1.8.1",
     "react-day-picker": "^10.0.2",
     "recharts": "^3.10.1",
     "sonner": "^2.0.8",
     "tailwind-merge": "^3.6.0",
-    "zustand": "^5.0.15"
+    "zustand": "^5.0.16"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
